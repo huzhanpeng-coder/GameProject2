@@ -733,11 +733,13 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			//send message if bomberman dies
 			if (player1flag==1) {
 				JOptionPane.showMessageDialog(null, "Player 1 Died! Better luck next time!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
+				player1flag=0;
 				bombermanLabel.setVisible(false);
 			}
 			
 			if (player2flag==1) {
 				JOptionPane.showMessageDialog(null, "Player 2 Died! Better luck next time!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
+				player2flag=0;
 				bomberman2Label.setVisible(false);
 			}
 			
