@@ -11,13 +11,13 @@ import javax.swing.JOptionPane;
 
 public class enemy extends Sprite implements Runnable{
 	
-	private Boolean moving, visible, enemyAlive, bombermanAlive,horizontal, direction; 
+	private Boolean moving, visible, enemyAlive, bombermanAlive,bomberman2Alive,horizontal, direction; 
 	private Thread t;
-	private JLabel enemyLabel, bombermanLabel, bombLabel;
+	private JLabel enemyLabel, bombermanLabel,bomberman2Label;
 	private int limit = 0;
 	private JButton animationButton;
-	private bomber bomberman;
-	private bomb bomb, bomb_ex_right, bomb_ex_left, bomb_ex_up, bomb_ex_down;
+	private bomber bomberman,bomberman2;
+	private bomb bomb,bomb2, bomb_ex_right, bomb_ex_left, bomb_ex_up, bomb_ex_down,bomb2_ex_right, bomb2_ex_left, bomb2_ex_up, bomb2_ex_down;
 	private Connection conn = null;
 	private Statement stmt = null;
 	
@@ -25,27 +25,34 @@ public class enemy extends Sprite implements Runnable{
 	public Boolean getEnemyAlive() {return enemyAlive;} 
 	public int getLimit() {return limit;}
 	public Boolean getBombermanAlive() {return bombermanAlive;}
+	public Boolean getBomberman2Alive() {return bomberman2Alive;}
 	public Boolean getVisible() {return visible;}
 	
 	public void setMoving(Boolean moving) {	this.moving = moving;}
 	
 	//Work with bomb, bomb explosion and bomberman features
 	public void setBomberman (bomber temp) {this.bomberman=temp;}
+	public void setBomberman2 (bomber temp) {this.bomberman2=temp;}
 	public void setBomb(bomb temp) {this.bomb= temp;}
+	public void setBomb2(bomb temp) {this.bomb2= temp;}
 	public void setVisible(Boolean visible) {this.visible = visible;}
 	public void setEnemyAlive(Boolean temp) {this.enemyAlive=temp;}
 	public void setBombermanAlive(Boolean temp) {this.bombermanAlive=temp;}
 	
-	public void setBombEx(bomb temp, bomb temp2, bomb temp3, bomb temp4) {
+	public void setBombEx(bomb temp, bomb temp2, bomb temp3, bomb temp4,bomb temp5, bomb temp6, bomb temp7, bomb temp8) {
 		this.bomb_ex_right= temp;
 		this.bomb_ex_left= temp2;
 		this.bomb_ex_up= temp3;
 		this.bomb_ex_down= temp4;
+		this.bomb2_ex_right= temp5;
+		this.bomb2_ex_left= temp6;
+		this.bomb2_ex_up= temp7;
+		this.bomb2_ex_down= temp8;
 	}
 	
 	public void setEnemyLabel(JLabel temp) {this.enemyLabel = temp;}
 	public void setBombermanLabel(JLabel temp) {this.bombermanLabel = temp;}
-	public void setBombLabel(JLabel temp) {this.bombLabel= temp;}
+	public void setBomberman2Label(JLabel temp) {this.bomberman2Label = temp;}
 	public void setAnimationButton(JButton temp) {this.animationButton = temp;}
 	public void setLimit(int temp) {this.limit = temp;}
 	
@@ -60,6 +67,7 @@ public class enemy extends Sprite implements Runnable{
 		   this.visible=false;
 		   this.horizontal=true;
 		   this.bombermanAlive=true;
+		   this.bomberman2Alive=true;
 	}
 	
 	public enemy(Boolean horizontal) {
@@ -70,6 +78,7 @@ public class enemy extends Sprite implements Runnable{
 		   this.visible=false;
 		   this.horizontal=horizontal;
 		   this.bombermanAlive=true;
+		   this.bomberman2Alive=true;
 	}
 	
 	public enemy(JLabel temp) {
@@ -81,6 +90,7 @@ public class enemy extends Sprite implements Runnable{
 		   this.horizontal=true;
 		   this.visible=false;
 		   this.bombermanAlive=true;
+		   this.bomberman2Alive=true;
 	 }
 	
 	
@@ -162,20 +172,32 @@ public class enemy extends Sprite implements Runnable{
 			bombermanLabel.setIcon( new ImageIcon( getClass().getResource("smallninja2.png")));
 			
 		}
+		if(this.r.intersects(bomberman2.getRectangle())) {
+			this.bomberman2Alive =false;
+			this.moving = false;
+			animationButton.setText("Re-start");
+			bomberman2Label.setIcon( new ImageIcon( getClass().getResource("smallninja2.png")));
+			
+		}
 	}
 	
 	private void gameEnd() {
 		if(this.bombermanAlive == false) {
-			JOptionPane.showMessageDialog(null, "You died! Better luck next time!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
-			displayAllScores();
+			JOptionPane.showMessageDialog(null, "Player 1 died!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+			//displayAllScores();
 			this.bombermanAlive = true;
+		}
+		if(this.bomberman2Alive == false) {
+			JOptionPane.showMessageDialog(null, "Player 2 died!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+			//displayAllScores();
+			this.bomberman2Alive = true;
 		}
 		
 	}
 	
 	// detect bomb and change direction of enemy so they do not share same space
 	private void detectBombCollision() {
-		if(this.r.intersects(bomb.getRectangle())) {
+		if(this.r.intersects(bomb.getRectangle())||this.r.intersects(bomb2.getRectangle())) {
 			direction = !direction;
 		}
 	}
@@ -183,7 +205,9 @@ public class enemy extends Sprite implements Runnable{
 	//detect if explosion reaches enemy
 	private void detectBombExplosion() {
 		if(this.r.intersects(bomb_ex_right.getRectangle()) || this.r.intersects(bomb_ex_left.getRectangle()) ||
-			this.r.intersects(bomb_ex_down.getRectangle()) || this.r.intersects(bomb_ex_up.getRectangle())) {
+			this.r.intersects(bomb_ex_down.getRectangle()) || this.r.intersects(bomb_ex_up.getRectangle())	||
+			this.r.intersects(bomb2_ex_right.getRectangle()) || this.r.intersects(bomb2_ex_left.getRectangle()) ||
+			this.r.intersects(bomb2_ex_down.getRectangle()) || this.r.intersects(bomb2_ex_up.getRectangle())) {
 			this.moving=false;
 			this.enemyAlive =false;
 			enemyLabel.setIcon( new ImageIcon( getClass().getResource("enemy2.png")));
@@ -258,8 +282,12 @@ public class enemy extends Sprite implements Runnable{
 		
 		String[] record = new String[5];
 		
-		for (int i=0; i<5; i++) {
+		if(counter>5) {counter=5;}
+		
+		for (int i=0; i<counter; i++) {
+		
 			record[i] = "<td>" + String.valueOf(id_array[i]) + "</td><td>"+ String.valueOf(name_array[i]) + "</td><td>" + String.valueOf(score_array[i]) + "</td>";
+		
 		}
 		
 		sb.append("<html><table><tr><td>Player</td><td>Name</td><td>Score</td></tr>");

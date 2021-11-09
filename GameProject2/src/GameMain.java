@@ -28,20 +28,24 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 	 */
 	private static final long serialVersionUID = -925518549680460124L;
 	
-	private bomber bomberman;
+	private bomber bomberman,bomberman2;
 	private enemy enemy[] = new enemy[4];
 	private bomb bomb_ex[] = new bomb[5];
+	private bomb bomb2_ex[] = new bomb[5];
+	
 	private walls bricks;
-	private int[][] map = { {0,0,1,0,1,1,1,1,1,0,1,0},{0,2,1,0,2,0,1,2,1,0,2,0},{0,1,0,0,0,0,1,1,1,1,0,1},{0,0,0,0,2,1,0,2,1,1,0,1},{0,1,0,0,1,0,0,1,1,1,0,1},{0,2,0,1,2,1,0,2,1,1,2,1},{0,1,0,1,1,1,0,1,1,1,0,1} };
+	private int[][] map = { {0,0,1,0,1,1,1,1,1,0,0,0},{0,2,1,0,2,0,1,2,1,0,2,0},{0,1,0,0,0,0,1,1,1,1,0,1},{0,0,0,0,2,1,0,2,1,1,0,1},{0,1,0,0,1,0,0,1,1,1,0,1},{0,2,0,1,2,1,0,2,1,1,2,1},{0,1,0,1,1,1,0,1,1,1,0,1} };
 	private int[][]bombermanPosition = new int [7][12];
-	private int flag=0; //flag to identify when the game is over 
+	private int[][]bomberman2Position = new int [7][12];
+	private int player1flag=0, player2flag=0; //flag to identify when the game is over 
 	//labels to show the graphics
 	private JLabel enemyLabel[] =  new JLabel[4];
-	private JLabel bombermanLabel;
+	private JLabel bombermanLabel,bomberman2Label;
 	private JLabel bombLabel[] = new JLabel[5];
+	private JLabel bomb2Label[] = new JLabel[5];
 	private JButton startButton;
 	private JLabel[][] brickLabel = new JLabel[map.length][map[0].length];
-	private ImageIcon bombermanImage, bombermanDownImage,bricksImage, bricksImage2,emptyImage, bombImage, enemyImage;
+	private ImageIcon bombermanImage, bombermanDownImage, bomberman2DownImage,bricksImage, bricksImage2,emptyImage, bombImage, enemyImage;
 	private JLabel  scoreboardLabel,playerLabel,scoresLabel;
 	private String player_name="";
 	private int[] enemy_down = new int[4];
@@ -56,6 +60,7 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 		super("Bomberman");
 		setSize(GameProperties.SCREEN_WIDTH, GameProperties.SCREEN_HEIGHT);
 		bombermanPosition[0][0]=1;
+		bomberman2Position[0][11]=1;
 		/////////////////////////////////////////////////Maze///////////////////////////////////////////////////////
 		bricks = new walls();
 		bricksImage = new ImageIcon( getClass().getResource( bricks.getFilename() ) );
@@ -102,12 +107,30 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 		
 		bombermanDownImage = new ImageIcon( getClass().getResource( "smallninja2.png" ) );
 		
+		/////////////////////////////////////////////////Bomberman2///////////////////////////////////////////////////////
+		bomberman2 = new bomber();
+		bomberman2Label = new JLabel();
+		bombermanImage = new ImageIcon( getClass().getResource( bomberman2.getFilename() ) );
+		bomberman2Label.setIcon(bombermanImage); 
+		bomberman2Label.setSize(bomberman2.getWidth(),bomberman2.getHeight());	
+		bomberman2Label.setVisible(bomberman2.getVisible());
+		
+		bomberman2DownImage = new ImageIcon( getClass().getResource( "smallninja2.png" ) );
+		
 		/////////////////////////////////////////////////Bomb///////////////////////////////////////////////////////
 		for (int i=0; i<5 ; i++) {
 			bomb_ex[i] = new bomb();
 			bombLabel[i] = new JLabel();
 			bombLabel[i].setIcon(emptyImage); 
 			bombLabel[i].setSize(bomb_ex[i].getWidth(),bomb_ex[i].getHeight());
+			
+		}
+		
+		for (int i=0; i<5 ; i++) {
+			bomb2_ex[i] = new bomb();
+			bomb2Label[i] = new JLabel();
+			bomb2Label[i].setIcon(emptyImage); 
+			bomb2Label[i].setSize(bomb2_ex[i].getWidth(),bomb2_ex[i].getHeight());
 			
 		}
 		
@@ -128,9 +151,11 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			enemy[i].setEnemyLabel(enemyLabel[i]); 
 			enemy[i].setBomberman(bomberman); //collision with bomberman
 			enemy[i].setBombermanLabel(bombermanLabel);
-			enemy[i].setBomb(bomb_ex[0]); //collision for initial bomb
-			enemy[i].setBombLabel(bombLabel[0]);
-			enemy[i].setBombEx(bomb_ex[1],bomb_ex[2],bomb_ex[3], bomb_ex[4]);//for collision with the explosion
+			enemy[i].setBomberman2(bomberman2); //collision with bomberman
+			enemy[i].setBomberman2Label(bomberman2Label);
+			enemy[i].setBomb(bomb_ex[0]);
+			enemy[i].setBomb2(bomb2_ex[0]);//collision for initial bomb
+			enemy[i].setBombEx(bomb_ex[1],bomb_ex[2],bomb_ex[3], bomb_ex[4],bomb2_ex[1],bomb2_ex[2],bomb2_ex[3], bomb2_ex[4]);//for collision with the explosion
 			enemyLabel[i].setVisible(enemy[i].getVisible());
 			
 		}
@@ -169,15 +194,20 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 		setLayout(null);
 		
 		bomberman.setCoordinates(25, 0);
+		bomberman2.setCoordinates(1025, 0);
 		enemy[0].setCoordinates(125, 300);
 		enemy[1].setCoordinates(425, 200);
 		enemy[2].setCoordinates(625, 500);
 		enemy[3].setCoordinates(1025, 300);
 		bomb_ex[0].setCoordinates(0, 0);
+		bomb2_ex[0].setCoordinates(0, 0);
 		
 		//adding labels and update position for bomberman 		
 		add(bombermanLabel);
 		bombermanLabel.setLocation(bomberman.getX(), bomberman.getY());
+		
+		add(bomberman2Label);
+		bomberman2Label.setLocation(bomberman2.getX(), bomberman2.getY());
 		
 		//adding labels for enemy 
 		for (int i =0; i<4 ; i++) {
@@ -189,8 +219,10 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 		for (int i=0; i< 5 ; i++) {
 			add(bombLabel[i]);
 			bombLabel[i].setLocation(bomb_ex[i].getX(), bomb_ex[i].getY());
+			add(bomb2Label[i]);
+			bomb2Label[i].setLocation(bomb2_ex[i].getX(), bomb2_ex[i].getY());
 		}
-		
+				
 		//adding bricksLabel
 		for (int i=0; i< map.length ; i++) {
 			for (int j=0; j< map[i].length ; j++) {
@@ -209,6 +241,7 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 
 
 	@Override
+	////////////////////////////////////BOMBERMAN 1 CONTROLS //////////////////////////////////////////
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
@@ -350,8 +383,8 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 							//bomb explosions check spaces beside the bomb
 							for (int k=1; k< 5 ; k++) {
 								if ((brickLabel[i][j].getLocation().getX() == (bombLabel[k].getLocation().getX()-25)) 
-									&& (brickLabel[i][j].getLocation().getY() == (bombLabel[k].getLocation().getY())) 
-									&& map[i][j]!=2) {
+										&& (brickLabel[i][j].getLocation().getY() == (bombLabel[k].getLocation().getY())) 
+										&& map[i][j]!=2) {
 									brickLabel[i][j].setIcon(emptyImage);
 									map[i][j]=0;
 								}
@@ -361,9 +394,18 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 							for (int k=0; k< 5 ; k++) {
 								//check if bomberman was caught in the explosions 
 								if (((bombermanLabel.getLocation().getX()-25) == (bombLabel[k].getLocation().getX()-25)) 
-									&& (bombermanLabel.getLocation().getY() == (bombLabel[k].getLocation().getY()))) {
+										&& (bombermanLabel.getLocation().getY() == (bombLabel[k].getLocation().getY()))) {
 									bombermanLabel.setIcon(bombermanDownImage); 
-									flag=1;
+									player1flag=1;
+								}
+							}
+							
+							for (int k=0; k< 5 ; k++) {
+								//check if bomberman was caught in the explosions 
+								if (((bomberman2Label.getLocation().getX()-25) == (bombLabel[k].getLocation().getX()-25)) 
+										&& (bomberman2Label.getLocation().getY() == (bombLabel[k].getLocation().getY()))) {
+									bomberman2Label.setIcon(bomberman2DownImage); 
+									player2flag=1;
 								}
 							}
 							
@@ -396,17 +438,23 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 					} 
 					
 					//send message if bomberman dies
-					if (flag==1) {
-						JOptionPane.showMessageDialog(null, "You died! Better luck next time!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+					if (player1flag==1) {
+						JOptionPane.showMessageDialog(null, "Player 1 died! Better luck next time!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
 						displayAllScores();
-						bomberman.setVisible(false);
+						bomberman.hide();
+					}
+					
+					if (player2flag==1) {
+						JOptionPane.showMessageDialog(null, "Player 2 died! Better luck next time!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+						displayAllScores();
+						bomberman2.hide();
 					}
 					
 					//message if all enemies are down
 					if(enemy[0].getEnemyAlive()==false && enemy[1].getEnemyAlive()==false && enemy[2].getEnemyAlive()==false && enemy[3].getEnemyAlive()==false) {
-						JOptionPane.showMessageDialog(null, "YOU WON!", "CONGRATULATIONS!", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "SCORES!", "CONGRATULATIONS!", JOptionPane.INFORMATION_MESSAGE);
 						displayAllScores();
-						bomberman.setVisible(false);
+						bomberman.hide();
 						
 					}
 					
@@ -433,6 +481,247 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			timer.schedule(task2, 2000);
 			
 		}
+		/////////////////////////////////////////////BOMBERMAN 2 CONTROLS////////////////////////////////////////////////////////////
+		
+		if (e.getKeyCode() == KeyEvent.VK_S) {
+			
+			//Set the boundaries for bomberman
+			if ((bomberman2.getY()+200)<GameProperties.SCREEN_HEIGHT) { 
+				
+				loop :  // Loop to handle the position of bomberman and positions available in the map
+				for (int i=0; i< map.length ; i++) {
+					for (int j=0; j< map[i].length ; j++) {
+					
+						if(bomberman2Position[i][j]==1) { // check for current bomberman position
+							if(map[i+1][j]==0) {    // check if the next space is available
+								bomberman2Position[i][j]=0;		//change current position to 0
+								bomberman2Position[i+1][j]=1;	//the new bomberman position
+								bomberman2.setY(bomberman2.getY()+GameProperties.CHARACTER_STEP);
+								bomberman2Label.setLocation(bomberman2.getX(), bomberman2.getY());
+								break loop;// Once the position for bomberman has changed then finish loop to keep bomberman from moving further
+							}
+						}
+					}
+				}
+			}
+			
+		}
+		
+		else if (e.getKeyCode() == KeyEvent.VK_W) {
+			
+			//Set the boundaries for bomberman
+			if ((bomberman2.getY())>0) { 
+				
+				loop :
+					for (int i=0; i< map.length ; i++) {
+						for (int j=0; j< map[i].length ; j++) {
+						
+							if(bomberman2Position[i][j]==1) { 
+								if(map[i-1][j]==0) {
+									bomberman2Position[i][j]=0;
+									bomberman2Position[i-1][j]=1;
+									bomberman2.setY(bomberman2.getY()-GameProperties.CHARACTER_STEP);
+									bomberman2Label.setLocation(bomberman2.getX(), bomberman2.getY());
+									break loop;
+								}
+							}
+						}
+					}	
+			}
+		}
+		
+		else if (e.getKeyCode() == KeyEvent.VK_D) {
+			
+			//Set the boundaries for bomberman
+			if ((bomberman2.getX()+125)<GameProperties.SCREEN_WIDTH) { 
+				
+					loop :
+					for (int i=0; i< map.length ; i++) {
+						for (int j=0; j< map[i].length ; j++) {
+						
+							if(bomberman2Position[i][j]==1) {
+								if(map[i][j+1]==0) {
+									bomberman2Position[i][j]=0;
+									bomberman2Position[i][j+1]=1;
+									bomberman2.setX(bomberman2.getX()+GameProperties.CHARACTER_STEP);
+									bomberman2Label.setLocation(bomberman2.getX(), bomberman2.getY());
+									break loop;
+								}
+							}
+						}
+					}
+			}
+		}
+		else if (e.getKeyCode() == KeyEvent.VK_A) {
+			
+			//Set the boundaries for bomberman
+			if ((bomberman2.getX())-25>0) {
+				
+				loop :
+					for (int i=0; i< map.length ; i++) {
+						for (int j=0; j< map[i].length ; j++) {
+						
+							if(bomberman2Position[i][j]==1) {
+								if(map[i][j-1]==0) {
+									bomberman2Position[i][j]=0;
+									bomberman2Position[i][j-1]=1;
+									bomberman2.setX(bomberman2.getX()-GameProperties.CHARACTER_STEP);
+									bomberman2Label.setLocation(bomberman2.getX(), bomberman2.getY());
+									break loop;
+								}
+							}
+						}
+					}
+			}
+		}
+		
+		else if (e.getKeyCode() == KeyEvent.VK_X) {
+			
+			Timer timer = new Timer();
+			
+			TimerTask task = new TimerTask(){
+				public void run() {
+					
+					// checking if there is an unbreakable wall besides the bomb, if not then there is an explosion
+					for (int i=0; i< map.length ; i++) {
+						for (int j=0; j< map[i].length ; j++) {
+							
+							//bomb explosions check spaces beside the bomb
+							if ((brickLabel[i][j].getLocation().getX() == (bomb2Label[0].getX()-25)) && (brickLabel[i][j].getLocation().getY() == (bomb2Label[0].getY()-100))
+									&& map[i][j]!=2) {
+								bomb2Label[1].setIcon(bombImage); 
+								bomb2Label[1].setLocation(bomb2Label[0].getX(), bomb2Label[0].getY()-100);
+								bomb2_ex[1].setCoordinates(bomb2Label[0].getX(),bomb2Label[0].getY()-100);
+								}
+							if ((brickLabel[i][j].getLocation().getX() == (bomb2Label[0].getX()-25)) && (brickLabel[i][j].getLocation().getY() == (bomb2Label[0].getY()+100))
+									&& map[i][j]!=2) {
+								bomb2Label[2].setIcon(bombImage); 
+								bomb2Label[2].setLocation(bomb2Label[0].getX(), bomb2Label[0].getY()+100);
+								bomb2_ex[2].setCoordinates(bomb2Label[0].getX(),bomb2Label[0].getY()+100);
+								} 
+							if ((brickLabel[i][j].getLocation().getX() == (bomb2Label[0].getX()+75)) && (brickLabel[i][j].getLocation().getY() == (bomb2Label[0].getY()))
+									&& map[i][j]!=2) {
+								bomb2Label[3].setIcon(bombImage);
+								bomb2Label[3].setLocation(bomb2Label[0].getX()+100, bomb2Label[0].getY());
+								bomb2_ex[3].setCoordinates(bomb2Label[0].getX()+100,bomb2Label[0].getY());	
+								}
+							if ((brickLabel[i][j].getLocation().getX() == (bomb2Label[0].getX()-125)) && (brickLabel[i][j].getLocation().getY() == (bomb2Label[0].getY()))
+								&& map[i][j]!=2) {
+								bomb2Label[4].setIcon(bombImage);
+								bomb2Label[4].setLocation(bomb2Label[0].getX()-100,bomb2Label[0].getY() );
+								bomb2_ex[4].setCoordinates(bomb2Label[0].getX()-100,bomb2Label[0].getY());
+							}
+							
+						}
+					}
+			
+			//Erase walls in case there was an explosion		
+					for (int i=0; i< map.length ; i++) {
+						for (int j=0; j< map[i].length ; j++) {
+							
+							//bomb explosions check spaces beside the bomb
+							for (int k=1; k< 5 ; k++) {
+								if ((brickLabel[i][j].getLocation().getX() == (bomb2Label[k].getLocation().getX()-25)) 
+										&& (brickLabel[i][j].getLocation().getY() == (bomb2Label[k].getLocation().getY())) 
+										&& map[i][j]!=2) {
+									brickLabel[i][j].setIcon(emptyImage);
+									map[i][j]=0;
+								}
+							
+							}
+							
+							for (int k=0; k< 5 ; k++) {
+								//check if bomberman was caught in the explosions 
+								if (((bombermanLabel.getLocation().getX()-25) == (bomb2Label[k].getLocation().getX()-25)) 
+										&& (bombermanLabel.getLocation().getY() == (bomb2Label[k].getLocation().getY()))) {
+									bombermanLabel.setIcon(bombermanDownImage); 
+									player1flag=1;
+								}
+							}
+							
+							for (int k=0; k< 5 ; k++) {
+								//check if bomberman was caught in the explosions 
+								if (((bomberman2Label.getLocation().getX()-25) == (bomb2Label[k].getLocation().getX()-25)) 
+										&& (bomberman2Label.getLocation().getY() == (bomb2Label[k].getLocation().getY()))) {
+									bomberman2Label.setIcon(bomberman2DownImage); 
+									player2flag=1;
+								}
+							}
+							
+						}
+					}
+				}
+			};
+			
+			TimerTask task2 = new TimerTask(){
+				public void run() {
+					
+					for (int i=0; i< 5 ; i++) {
+					bomb2_ex[i].setCoordinates(0,0);
+					bomb2Label[i].setLocation(bomb2_ex[i].getX(), bomb2_ex[i].getY());
+					bomb2Label[i].setIcon(emptyImage);
+					}
+					
+					//hide enemy if they are caught by explosion
+					
+					for (int i=0; i< 4 ; i++) {
+						if (enemy[i].getEnemyAlive()==false) { 
+							enemy[i].hide();
+							if (enemy_down[i]==0) {
+								points = points + 1000;
+								scoresLabel.setText(String.valueOf(points));
+								scorePoints(points);
+								enemy_down[i]=1;
+							}
+						}
+					} 
+					
+					//send message if bomberman dies
+					if (player1flag==1) {
+						JOptionPane.showMessageDialog(null, "You died! Better luck next time!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+						displayAllScores();
+						bomberman.hide();
+					}
+					
+					if (player2flag==1) {
+						JOptionPane.showMessageDialog(null, "You died! Better luck next time!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+						displayAllScores();
+						bomberman.hide();
+					}
+					
+					//message if all enemies are down
+					if(enemy[0].getEnemyAlive()==false && enemy[1].getEnemyAlive()==false && enemy[2].getEnemyAlive()==false && enemy[3].getEnemyAlive()==false) {
+						JOptionPane.showMessageDialog(null, "YOU WON!", "CONGRATULATIONS!", JOptionPane.INFORMATION_MESSAGE);
+						displayAllScores();
+						bomberman.hide();
+						
+					}
+					
+					for (int i=0; i< 4 ; i++) {
+						enemyLabel[i].setVisible(enemy[i].getVisible());
+					}
+				
+				}
+			};
+			
+			//Process: 
+			//Change image for the initial bomb 
+			bombImage = new ImageIcon( getClass().getResource( bomb2_ex[0].getFilename() ) );
+			bomb2Label[0].setIcon(bombImage);
+			//Place the bomb in the same place the bomberman is located
+			bomb2Label[0].setLocation(bomberman2.getX(), bomberman2.getY());
+			//giving values X and Y so it can recognize collision with rectangles
+			bomb_ex[0].setCoordinates(bomberman2.getX(),bomberman2.getY());
+			
+			// explosion and collisions with walls and bomberman
+			timer.schedule(task, 1000);
+			
+			// reseting the bomb image
+			timer.schedule(task2, 2000);
+			
+		}
+	
+		
 		
 	}
 
@@ -450,11 +739,13 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			////////////////////////////Save player's name into database
 			try {
 				Class.forName("org.sqlite.JDBC");
+				System.out.println("Database Driver Loaded");
 				
 				String dbURL = "jdbc:sqlite:product.db";
 				conn = DriverManager.getConnection(dbURL);
 				
 				if (conn != null) {
+					System.out.println("Connected to database");
 					conn.setAutoCommit(false);
 					
 					stmt = conn.createStatement();
@@ -491,7 +782,7 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			//Display player name into scoreboard
 			playerLabel.setText(player_name);
 			
-			map = new int[][] { {0,0,1,0,1,1,1,1,1,0,1,0},{0,2,1,0,2,0,1,2,1,0,2,0},{0,1,0,0,0,0,1,1,1,1,0,1},{0,0,0,0,2,1,0,2,1,1,0,1},{0,1,0,0,1,0,0,1,1,1,0,1},{0,2,0,1,2,1,0,2,1,1,2,1},{0,1,0,1,1,1,0,1,1,1,0,1} };
+			map = new int[][] { {0,0,1,0,1,1,1,1,1,0,0,0},{0,2,1,0,2,0,1,2,1,0,2,0},{0,1,0,0,0,0,1,1,1,1,0,1},{0,0,0,0,2,1,0,2,1,1,0,1},{0,1,0,0,1,0,0,1,1,1,0,1},{0,2,0,1,2,1,0,2,1,1,2,1},{0,1,0,1,1,1,0,1,1,1,0,1} };
 			
 			//setting values to the bricks label according to the map
 			for (int i=0; i< map.length ; i++) {
@@ -513,7 +804,18 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			bombermanPosition = new int [7][12];
 			bombermanPosition[0][0] = 1; 
 			bombermanLabel.setLocation(bomberman.getX(), bomberman.getY());
-			flag=0;
+			
+			bomberman2.show();
+			bomberman2Label.setVisible(bomberman2.getVisible());
+			bomberman2Label.setIcon(bombermanImage);
+			bomberman2.setCoordinates(1025, 0);
+			bomberman2Position = new int [7][12];
+			bomberman2Position[0][10] = 1; 
+			bomberman2Label.setLocation(bomberman2.getX(), bomberman2.getY());
+			
+			
+			player1flag=0;
+			player2flag=0;
 			
 			for (int i=0; i< 4 ; i++) {
 				enemyLabel[i].setIcon(enemyImage); 
@@ -569,6 +871,8 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 		}	
 	}
 	
+	public void displayWinner() {}
+	
 	public void displayAllScores() {
 		
 		String[] id_array = new String[1] ;
@@ -598,12 +902,15 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 				conn.setAutoCommit(false);
 				
 				stmt = conn.createStatement();
-				String sql ="SELECT * FROM SCORES ORDER BY SCORE DESC"; 
-                ResultSet rs = stmt.executeQuery(sql);
 				
-                id_array = new String [counter];
+				String sql ="SELECT * FROM SCORES ORDER BY SCORE DESC"; 
+                
+				ResultSet rs = stmt.executeQuery(sql);
+				
+				id_array = new String [counter];
 				name_array = new String [counter];
 				score_array = new String [counter];
+				
 				counter = 0;
 				
 				while ( rs.next() ) {
@@ -629,10 +936,15 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 		}
 		
 		StringBuilder sb = new StringBuilder(64);
+		
 		String[] record = new String[5];
 		
-		for (int i=0; i<5; i++) {
+		if(counter>5) {counter=5;}
+		
+		for (int i=0; i<counter; i++) {
+		
 			record[i] = "<td>" + String.valueOf(id_array[i]) + "</td><td>"+ String.valueOf(name_array[i]) + "</td><td>" + String.valueOf(score_array[i]) + "</td>";
+		
 		}
 		
 		sb.append("<html><table><tr><td>Player</td><td>Name</td><td>Score</td></tr>");
@@ -642,7 +954,8 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 	    }
 	    
 	    sb.append("</table></html>");
-	    JOptionPane.showMessageDialog(null, sb, "Top Scores", JOptionPane.INFORMATION_MESSAGE);
+	    
+		JOptionPane.showMessageDialog(null, sb, "Top Scores", JOptionPane.INFORMATION_MESSAGE);
 		
 	}
 	
