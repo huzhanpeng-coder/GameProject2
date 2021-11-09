@@ -694,7 +694,7 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 		}
 	}
 	
-	///////////////////////////////////////////////////DISPLAY WIN AND LOSE WHEN PLAYER CLEARS THE GAME/////////////////
+///////////////////////////////////////////////////////DISPLAY WIN AND LOSE WHEN PLAYER CLEARS THE GAME////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -732,15 +732,18 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			
 			//send message if bomberman dies
 			if (player1flag==1) {
-				JOptionPane.showMessageDialog(null, "Player 1 Died! Better luck next time!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
-				displayAllScores();
-				bomberman.hide();
+				JOptionPane.showMessageDialog(null, "Player 1 Died! Better luck next time!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
+				bombermanLabel.setVisible(false);
 			}
 			
 			if (player2flag==1) {
-				JOptionPane.showMessageDialog(null, "Player 2 Died! Better luck next time!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Player 2 Died! Better luck next time!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
+				bomberman2Label.setVisible(false);
+			}
+			
+			if (player1flag==1 && player2flag==1) {
+				JOptionPane.showMessageDialog(null, "Both players died", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
 				displayAllScores();
-				bomberman2.hide();
 			}
 			
 			//message if all enemies are down

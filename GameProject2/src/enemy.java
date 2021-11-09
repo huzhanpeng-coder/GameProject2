@@ -183,15 +183,18 @@ public class enemy extends Sprite implements Runnable{
 	
 	private void gameEnd() {
 		if(this.bombermanAlive == false) {
-			JOptionPane.showMessageDialog(null, "Player 1 died!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Player 1 died!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
 			//displayAllScores();
 			this.bombermanAlive = true;
+			this.bombermanLabel.setVisible(false);
 		}
 		if(this.bomberman2Alive == false) {
-			JOptionPane.showMessageDialog(null, "Player 2 died!", "GAME OVER!", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Player 2 died!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
 			//displayAllScores();
 			this.bomberman2Alive = true;
+			this.bomberman2Label.setVisible(false);
 		}
+		
 		
 	}
 	
