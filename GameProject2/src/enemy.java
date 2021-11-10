@@ -14,7 +14,7 @@ public class enemy extends Sprite implements Runnable{
 	private Boolean moving, visible, enemyAlive, bombermanAlive,bomberman2Alive,horizontal, direction; 
 	private Thread t;
 	private JLabel enemyLabel, bombermanLabel,bomberman2Label;
-	private int limit = 0;
+	private int limit = 0,flag1=0,flag2=0;
 	private JButton animationButton;
 	private bomber bomberman,bomberman2;
 	private bomb bomb,bomb2, bomb_ex_right, bomb_ex_left, bomb_ex_up, bomb_ex_down,bomb2_ex_right, bomb2_ex_left, bomb2_ex_up, bomb2_ex_down;
@@ -24,6 +24,8 @@ public class enemy extends Sprite implements Runnable{
 	public Boolean getMoving() {return moving;}
 	public Boolean getEnemyAlive() {return enemyAlive;} 
 	public int getLimit() {return limit;}
+	public int getFlag1() {return flag1;}
+	public int getFlag2() {return flag2;}
 	public Boolean getBombermanAlive() {return bombermanAlive;}
 	public Boolean getBomberman2Alive() {return bomberman2Alive;}
 	public Boolean getVisible() {return visible;}
@@ -33,6 +35,8 @@ public class enemy extends Sprite implements Runnable{
 	//Work with bomb, bomb explosion and bomberman features
 	public void setBomberman (bomber temp) {this.bomberman=temp;}
 	public void setBomberman2 (bomber temp) {this.bomberman2=temp;}
+	public void setFlag1 (int temp) {this.flag1=temp;}
+	public void setFlag2 (int temp) {this.flag2=temp;}
 	public void setBomb(bomb temp) {this.bomb= temp;}
 	public void setBomb2(bomb temp) {this.bomb2= temp;}
 	public void setVisible(Boolean visible) {this.visible = visible;}
@@ -167,14 +171,12 @@ public class enemy extends Sprite implements Runnable{
 	private void detectBombermanCollision() {
 		if(this.r.intersects(bomberman.getRectangle())) {
 			this.bombermanAlive =false;
-			this.moving = false;
 			animationButton.setText("Re-start");
 			bombermanLabel.setIcon( new ImageIcon( getClass().getResource("smallninja2.png")));
 			
 		}
 		if(this.r.intersects(bomberman2.getRectangle())) {
 			this.bomberman2Alive =false;
-			this.moving = false;
 			animationButton.setText("Re-start");
 			bomberman2Label.setIcon( new ImageIcon( getClass().getResource("smallninja2.png")));
 			
@@ -183,13 +185,23 @@ public class enemy extends Sprite implements Runnable{
 	
 	private void gameEnd() {
 		if(this.bombermanAlive == false) {
-			JOptionPane.showMessageDialog(null, "Player 1 died!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
-			//displayAllScores();
+			if (this.flag1==0) {
+				JOptionPane.showMessageDialog(null, "Player 1 died!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
+				//displayAllScores();
+				this.flag1=1;
+			}
+			
 			this.bombermanAlive = true;
 			this.bombermanLabel.setVisible(false);
 		}
 		if(this.bomberman2Alive == false) {
-			JOptionPane.showMessageDialog(null, "Player 2 died!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
+			
+			if (this.flag2==0) {
+				JOptionPane.showMessageDialog(null, "Player 2 died!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
+				//displayAllScores();
+				this.flag2=1;
+			}
+			
 			//displayAllScores();
 			this.bomberman2Alive = true;
 			this.bomberman2Label.setVisible(false);

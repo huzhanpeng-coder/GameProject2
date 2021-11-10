@@ -37,7 +37,7 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 	private int[][] map = { {0,0,1,0,1,1,1,1,1,0,0,0},{0,2,1,0,2,0,1,2,1,0,2,0},{0,1,0,0,0,0,1,1,1,1,0,1},{0,0,0,0,2,1,0,2,1,1,0,1},{0,1,0,0,1,0,0,1,1,1,0,1},{0,2,0,1,2,1,0,2,1,1,2,1},{0,1,0,1,1,1,0,1,1,1,0,1} };
 	private int[][]bombermanPosition = new int [7][12];
 	private int[][]bomberman2Position = new int [7][12];
-	private int player1flag=0, player2flag=0; //flag to identify when the game is over 
+	private int player1flag=0, player2flag=0,displayflag1=0, displayflag2=0; //flag to identify when the game is over 
 	//labels to show the graphics
 	private JLabel enemyLabel[] =  new JLabel[4];
 	private JLabel bombermanLabel,bomberman2Label;
@@ -377,6 +377,7 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			
 			points1 = 0;
 			points2 = 0;
+			
 			for (int i=0; i< 4 ; i++) {
 				enemy_down[i]=0;
 			}
@@ -467,10 +468,11 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			bomberman2Position = new int [7][12];
 			bomberman2Position[0][10] = 1; 
 			bomberman2Label.setLocation(bomberman2.getX(), bomberman2.getY());
-			
-			
+						
 			player1flag=0;
 			player2flag=0;
+			displayflag1=0;
+			displayflag2=0;
 			
 			for (int i=0; i< 4 ; i++) {
 				enemyLabel[i].setIcon(enemyImage); 
@@ -478,12 +480,14 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 				enemy[i].show();
 				enemy[i].setEnemyAlive(true);
 				enemyLabel[i].setVisible(enemy[i].getVisible());
+				enemy[i].setFlag1(0);
+				enemy[i].setFlag2(0);
 			}
 			
 			startButton.setText("Re-start");
 			
 			for (int i=0; i< 4 ; i++) {
-				if (!enemy[i].getMoving()) { //check if enemies are moving
+				if (!enemy[i].getMoving()) { //check and make enemies move
 					//start moving
 					enemy[i].moveEnemy();
 				}
@@ -731,15 +735,17 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			} 
 			
 			//send message if bomberman dies
-			if (player1flag==1) {
+			if (player1flag==1 && displayflag1==0) {
 				JOptionPane.showMessageDialog(null, "Player 1 Died! Better luck next time!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
-				player1flag=0;
+				displayflag1=1;
+				bombermanLabel.setLocation(3000,3000);
 				bombermanLabel.setVisible(false);
 			}
 			
-			if (player2flag==1) {
+			if (player2flag==1 && displayflag2==0) {
 				JOptionPane.showMessageDialog(null, "Player 2 Died! Better luck next time!", "Ooops!", JOptionPane.INFORMATION_MESSAGE);
-				player2flag=0;
+				displayflag2=1;
+				bomberman2Label.setLocation(3000,3000);
 				bomberman2Label.setVisible(false);
 			}
 			
@@ -752,7 +758,8 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 			if(enemy[0].getEnemyAlive()==false && enemy[1].getEnemyAlive()==false && enemy[2].getEnemyAlive()==false && enemy[3].getEnemyAlive()==false) {
 				JOptionPane.showMessageDialog(null, "YOU WON!", "CONGRATULATIONS!", JOptionPane.INFORMATION_MESSAGE);
 				displayAllScores();
-				bomberman.hide();
+				bombermanLabel.setVisible(false);
+				bomberman2Label.setVisible(false);
 				
 			}
 			
