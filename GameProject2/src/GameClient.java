@@ -21,7 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class GameMain extends JFrame implements ActionListener,KeyListener{
+public class GameClient extends JFrame implements ActionListener,KeyListener{
 
 	/**
 	 * 
@@ -56,7 +56,7 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 	private Statement stmt = null;
 	
 	//GUI setup
-	public GameMain() {
+	public GameClient() {
 		super("Bomberman");
 		setSize(GameProperties.SCREEN_WIDTH, GameProperties.SCREEN_HEIGHT);
 		bombermanPosition[0][0]=1;
@@ -245,7 +245,7 @@ public class GameMain extends JFrame implements ActionListener,KeyListener{
 	
 	
 	public static void main (String[] args) {
-		GameMain myGame = new GameMain();
+		GameClient myGame = new GameClient();
 		myGame.setVisible(true);
 	}
 
